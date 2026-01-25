@@ -5,8 +5,17 @@
 This section is for developers integrating WePay Escrow Payment Services into their applications.
 
 ## Version
-current version: 1.0 <br/>
+current version: v1.0.0 <br/>
 last updated date: 25/01/2026
+
+## Change Log
+
+
+| Version        | What to Include              |
+| -------------- | ---------------------------- |
+| Major (v1.0.0) | checkout on contract level public              |
+
+
 
 ## Overview
 
@@ -697,12 +706,6 @@ Before starting, ensure you have:
 - Access to the phone number registered with Absher (for Absher verification)
 - A valid payment method (credit/debit card)
 
-# Checkout Screen
-
-This is the first screen you'll see when accessing the payment link. It displays your order summary and payment details.
-the amounts that you will see is what the buyer should pay, if the agreed terms is the buyer will pay Wepay fees, then this screen will display Wepay fees Amounts
-
----
 
 ## 1. Order Summary Card
 
