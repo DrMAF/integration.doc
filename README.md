@@ -16,6 +16,8 @@ last updated date: 25/01/2026
 | Major (v1.0.0) | checkout on contract level public              |
 
 
+[[_TOC_]]
+
 
 ## Overview
 
@@ -624,7 +626,6 @@ sequenceDiagram
 	]
 }
 ```
-## Enumerations
 # Enums Documentation
 
 ## ContractStatus
