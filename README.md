@@ -1168,31 +1168,6 @@ If you encounter issues not covered here:
 - Keep your transaction ID for records
 - Log out after completing payment if using a shared device
 
-# Frequently Asked Questions (FAQ)
-
-## Q: What happens if I close the browser during payment?
-
-**A**: If you've completed KYC, you can return to the link and proceed directly to payment. If payment was in progress, check with your bank or payment gateway.
-
-## Q: Is my payment information stored?
-
-**A**: Payment details are processed securely through payment gateways. WePay doesn't store your full card details.
-
-# Conclusion
-
-This guide covers all aspects of using the WePay Third-Party Payment Integration platform. Follow the steps carefully, and don't hesitate to contact support if you need assistance.
-
-**Remember**:
-
-- Complete all required fields accurately
-- Keep your payment ID for records
-- Your payment is protected by escrow
-- Support is available if you encounter issues
-
-Thank you for using WePay!
-
----
-
 # Webhook Notifications
 
 ## Overview
@@ -1948,6 +1923,20 @@ After **10 consecutive failed deliveries**, your webhook subscription will be au
 
 ---
 
+# Frequently Asked Questions (FAQ)
+
+## Integration FAQ
+
+### Q: What happens if I close the browser during payment?
+
+**A:** If you've completed KYC, you can return to the link and proceed directly to payment. If payment was in progress, check with your bank or payment gateway.
+
+### Q: Is my payment information stored?
+
+**A:** Payment details are processed securely through payment gateways. WePay doesn't store your full card details.
+
+---
+
 ## Webhook FAQ
 
 ### Q: How do I know if my webhook subscription is working?
@@ -1977,3 +1966,18 @@ After **10 consecutive failed deliveries**, your webhook subscription will be au
 ### Q: What happens if my server is down when a webhook is sent?
 
 **A:** WePay will retry delivery up to 5 times with exponential backoff (10s, 30s, 2min, 10min, 1hr). If all retries fail, check your delivery logs when your server is back up.
+
+---
+
+# Conclusion
+
+This guide covers all aspects of using the WePay Third-Party Payment Integration platform. Follow the steps carefully, and don't hesitate to contact support if you need assistance.
+
+**Remember**:
+
+- Complete all required fields accurately
+- Keep your payment ID for records
+- Your payment is protected by escrow
+- Support is available if you encounter issues
+
+Thank you for using WePay!
