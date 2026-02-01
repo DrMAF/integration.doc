@@ -5,14 +5,15 @@
 This section is for developers integrating WePay Escrow Payment Services into their applications.
 
 ## Version
-current version: v1.0.0 <br/>
-last updated date: 25/01/2026
+current version: v1.1.0 <br/>
+last updated date: 01/02/2026
 
 ## Change Log
 
 
 | Version        | What to Include              |
 | -------------- | ---------------------------- |
+| Minor (v1.1.0) | Webhook notifications support |
 | Major (v1.0.0) | checkout on contract level public              |
 
 
@@ -26,6 +27,7 @@ To integrate WePay payment services, you need to:
 - Obtain an access token using client credentials
 - Create a contract using the API
 - Redirect users to the checkout URL provided in the response
+- (Optional) Set up [Webhook Notifications](webhook.md) for real-time event updates
 
 ## Step 1: Obtain Access Token
 
@@ -1169,13 +1171,15 @@ If you encounter issues not covered here:
 
 # Frequently Asked Questions (FAQ)
 
-## Q: What happens if I close the browser during payment?
+### Q: What happens if I close the browser during payment?
 
-**A**: If you've completed KYC, you can return to the link and proceed directly to payment. If payment was in progress, check with your bank or payment gateway.
+**A:** If you've completed KYC, you can return to the link and proceed directly to payment. If payment was in progress, check with your bank or payment gateway.
 
-## Q: Is my payment information stored?
+### Q: Is my payment information stored?
 
-**A**: Payment details are processed securely through payment gateways. WePay doesn't store your full card details.
+**A:** Payment details are processed securely through payment gateways. WePay doesn't store your full card details.
+
+---
 
 # Conclusion
 
