@@ -116,7 +116,21 @@ After obtaining the access token, use it to create a payment contract.
         "metadata3": "",
         "metadata4": ""
     },
-    "callbackUrl": "http://localhost:3000/callback"
+    "callbackUrl": "http://localhost:3000/callback",
+	"Milestones": [
+		{
+			"Name": "milestone 1 name",
+			"Description": "milestone 1 description",
+			"Amount": 600,
+			"DueDate": "2026-12-20T10:00:00.000Z"
+    	},
+		{
+			"Name": "milestone 2 name",
+			"Description": "milestone 2 description",
+			"Amount": 400,
+			"DueDate": "2026-12-31T09:35:30.369Z"
+    	}
+	]
 }
 ```
 ### Field Descriptions
@@ -132,7 +146,8 @@ After obtaining the access token, use it to create a payment contract.
 | notes | string | Additional notes | Optional<br/>Example: "notes for mobile" |
 | reference | string | External reference identifier | Optional<br/>Example: "12321" |
 | metaData | object (MetaData) | Custom key-value metadata | Optional |
-| callbackUrl | string | Callback URL for contract events | Optional<br/>Example: "<http://localhost:3000/callback>" |
+| callbackUrl | string | Callback URL for contract events | Optional<br/>Example: "<http://localhost:3000/callback>" | 
+Milestones | list of objects (Milestone) | Seperate contract into multiple milestones | Optional |
 
 **Party (BuyerParty / SellerParty)**
 
@@ -150,6 +165,14 @@ After obtaining the access token, use it to create a payment contract.
 | metadata2 | string | Custom metadata field | OptionalExample: "2" |
 | metadata3 | string | Custom metadata field | OptionalExample: "" |
 | metadata4 | string | Custom metadata field | OptionalExample: "" |
+
+**Milestone**
+| Field Name | Type | Description | Required / Notes / Example |
+| --- | --- | --- | --- |
+| Name | string | Milestone name | **Required** OptionalExample: "milestone 1 name" |
+| Description | string | Milestone Description | OptionalExample: "milestone 1 description" |
+| Amount | Number | Milestone amount | **Required** OptionalExample: 600 <br> **Note:** Must be lower than contract amount and the total of all milestones amounts must be equal to the contract amount |
+| DueDate | string (date-time) | Contract creation timestamp (UTC) | **Required**<br>Example: 2026-12-20T10:00:000Z |
 
 ## Response: 
 
@@ -199,17 +222,21 @@ After obtaining the access token, use it to create a payment contract.
 
 | Field Name | Type | Description | Required / Notes / Example |
 | --- | --- | --- | --- |
+| Id | number | Milestone identifier | **Required**<br>Example: 13 |
 | name | string | Milestone name | **Required**<br><br>Example: "Delivery" |
 | description | string | Milestone description | Optional |
 | amount | number | Milestone amount | **Required**<br><br>Example: 500 |
 | dueDate | string (date-time) | Milestone due date (UTC) | **Required**<br><br>Example: 2024-02-01T00:00:00Z |
+| pricingLineItems | array of ExternalPriceLineItem | Pricing breakdown items | **Required** |
 
 **ExternalPriceLineItem**
 
 | Field Name | Type | Description | Required / Notes / Example |
 | --- | --- | --- | --- |
 | lineType | string (PricingLineType) | Pricing line type | **Required**<br><br>Example: "EscrowFee" |
+| LineTypeDescription | string | Pricing line type description | **Required** |
 | role | string (PricingRole) | Party responsible for the amount | **Required**<br><br>Example: "Buyer" |
+| RoleDescription | string | Role description | **Required** |
 | amount | number | Amount value | **Required**<br><br>Example: 50 |
 | description | string | Pricing line description | Optional |
 | order | integer | Display order | **Required**<br><br>Example: 1 |
@@ -235,7 +262,21 @@ curl -X POST "https://api.wepay.com.sa/apps/api/contracts" \
     "amount": 600,
     "description": "TEST External Iphone mobile",
     "notes": "notes for mobile",
-    "callbackurl": "http://localhost:3000/en/payment-success"
+    "callbackurl": "http://localhost:3000/en/payment-success",
+    "Milestones": [
+      {
+        "Name": "milestone 1 name",
+        "Description": "milestone 1 description",
+        "Amount": 600,
+        "DueDate": "2026-12-20T10:00:00.000Z"
+      },
+      {
+        "Name": "milestone 2 name",
+        "Description": "milestone 2 description",
+        "Amount": 400,
+        "DueDate": "2026-12-31T09:35:30.369Z"
+      }
+    ]
   }'
 
 ```
@@ -265,7 +306,110 @@ curl -X POST "https://api.wepay.com.sa/apps/api/contracts" \
 			"metadata3": "",
 			"metadata4": ""
 		},
-		"milestones": [],
+		"milestones": [
+			{
+				"Id": 12,
+				"Name": "milestone 1 name",
+				"Description": "milestone 1 description",
+				"DueDate": "2026-12-20T10:00:00.000Z",
+				"Amount": 686.25,
+				"PricingLineItems": [
+					{
+						"lineType": "contractAmount",
+						"role": "buyer",
+						"amount": 600,
+						"description": null,
+						"order": 1
+					},
+					{
+						"lineType": "escrowFee",
+						"role": "thirdParty",
+						"amount": 15.0,
+						"description": null,
+						"order": 2
+					},
+					{
+						"lineType": "escrowFeeTax",
+						"role": "thirdParty",
+						"amount": 2.25,
+						"description": null,
+						"order": 3
+					},
+					{
+						"lineType": "externalPlatformFee",
+						"role": "buyer",
+						"amount": 60.00,
+						"description": null,
+						"order": 4
+					},
+					{
+						"lineType": "externalPlatformFeeTax",
+						"role": "buyer",
+						"amount": 9.00,
+						"description": null,
+						"order": 5
+					},
+					{
+						"lineType": "netEscrowAmountToSeller",
+						"role": "seller",
+						"amount": 600,
+						"description": null,
+						"order": 6
+					}
+				]
+			},
+			{
+				"Id": 13,
+				"Name": "milestone 2 name",
+				"Description": "milestone 2 description",
+				"DueDate": "2026-12-31T09:35:30.369Z",
+				"Amount": 457.5,
+				"PricingLineItems": [
+					{
+						"lineType": "contractAmount",
+						"role": "buyer",
+						"amount": 400,
+						"description": null,
+						"order": 1
+					},
+					{
+						"lineType": "escrowFee",
+						"role": "thirdParty",
+						"amount": 10.00,
+						"description": null,
+						"order": 2
+					},
+					{
+						"lineType": "escrowFeeTax",
+						"role": "thirdParty",
+						"amount": 1.50,
+						"description": null,
+						"order": 3
+					},
+					{
+						"lineType": "externalPlatformFee",
+						"role": "buyer",
+						"amount": 40.00,
+						"description": null,
+						"order": 4
+					},
+					{
+						"lineType": "externalPlatformFeeTax",
+						"role": "buyer",
+						"amount": 6.00,
+						"description": null,
+						"order": 5
+					},
+					{
+						"lineType": "netEscrowAmountToSeller",
+						"role": "seller",
+						"amount": 400,
+						"description": null,
+						"order": 6
+					}
+				]
+			}
+		],
 		"pricingLineItems": [
 			{
 				"lineType": "contractAmount",
@@ -358,7 +502,110 @@ curl -X 'GET' \
 			"metadata3": "",
 			"metadata4": ""
 		},
-		"milestones": [],
+		"milestones": [
+			{
+				"Id": 12,
+				"Name": "milestone 1 name",
+				"Description": "milestone 1 description",
+				"DueDate": "2026-12-20T10:00:00.000Z",
+				"Amount": 686.25,
+				"PricingLineItems": [
+					{
+						"lineType": "contractAmount",
+						"role": "buyer",
+						"amount": 600,
+						"description": null,
+						"order": 1
+					},
+					{
+						"lineType": "escrowFee",
+						"role": "thirdParty",
+						"amount": 15.0,
+						"description": null,
+						"order": 2
+					},
+					{
+						"lineType": "escrowFeeTax",
+						"role": "thirdParty",
+						"amount": 2.25,
+						"description": null,
+						"order": 3
+					},
+					{
+						"lineType": "externalPlatformFee",
+						"role": "buyer",
+						"amount": 60.00,
+						"description": null,
+						"order": 4
+					},
+					{
+						"lineType": "externalPlatformFeeTax",
+						"role": "buyer",
+						"amount": 9.00,
+						"description": null,
+						"order": 5
+					},
+					{
+						"lineType": "netEscrowAmountToSeller",
+						"role": "seller",
+						"amount": 600,
+						"description": null,
+						"order": 6
+					}
+				]
+			},
+			{
+				"Id": 13,
+				"Name": "milestone 2 name",
+				"Description": "milestone 2 description",
+				"DueDate": "2026-12-31T09:35:30.369Z",
+				"Amount": 457.5,
+				"PricingLineItems": [
+					{
+						"lineType": "contractAmount",
+						"role": "buyer",
+						"amount": 400,
+						"description": null,
+						"order": 1
+					},
+					{
+						"lineType": "escrowFee",
+						"role": "thirdParty",
+						"amount": 10.00,
+						"description": null,
+						"order": 2
+					},
+					{
+						"lineType": "escrowFeeTax",
+						"role": "thirdParty",
+						"amount": 1.50,
+						"description": null,
+						"order": 3
+					},
+					{
+						"lineType": "externalPlatformFee",
+						"role": "buyer",
+						"amount": 40.00,
+						"description": null,
+						"order": 4
+					},
+					{
+						"lineType": "externalPlatformFeeTax",
+						"role": "buyer",
+						"amount": 6.00,
+						"description": null,
+						"order": 5
+					},
+					{
+						"lineType": "netEscrowAmountToSeller",
+						"role": "seller",
+						"amount": 400,
+						"description": null,
+						"order": 6
+					}
+				]
+			}
+		],
 		"pricingLineItems": [
 			{
 				"lineType": "contractAmount",
@@ -436,7 +683,7 @@ curl -X 'GET' \
 | sellerParty              | object (ContractPartyResponse)           | Seller party details             | **Required**               |
 | metaData            | object (ContractMetaData)                | Custom metadata                  | Optional                   |
 | milestones          | array of ContractMilestoneResponse       | Contract milestones              | **Required**               |
-| pricingLineItems    | array of ContractPricingLineItemResponse | Pricing breakdown                | **Required**               |
+| pricingLineItems    | array of PricingLineItemResponse | Pricing breakdown                | **Required**               |
 | createdDate         | string (date-time) (UTC)                      | Contract creation date (UTC)     | **Required**               |
 | updatedDate         | string (date-time) (UTC)                      | Last update date (UTC)           | **Required**               |
 
@@ -465,8 +712,9 @@ curl -X 'GET' \
 | amount      | number             | Milestone amount      | **Required**               |
 | status      | string             | Milestone status      | **Required**               |
 | dueDate     | string (date-time (UTC)) | Milestone due date    | **Required**               |
+| pricingLineItems    | array of PricingLineItemResponse | Pricing breakdown                | **Required**               |
 
-`ContractPricingLineItemResponse`
+`PricingLineItemResponse`
 
 | Field Name  | Type          | Description                   | Required / Notes / Example |
 | ----------- | ------------- | ----------------------------- | -------------------------- |
