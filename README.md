@@ -98,14 +98,24 @@ After obtaining the access token, use it to create a payment contract.
     "title": "Sell a property111",
     "contractServiceType": "Product",
     "BuyerParty": {
+		"platformRefId" : "USR_abc001",
         "phoneNumber": "966583944460",
         "firstName": "Buyer",
         "lastName": "Name aa"
     },
     "SellerParty": {
+		"platformRefId" : "USR_abc002",
         "phoneNumber": "966583944461",
         "firstName": "Seller",
-        "lastName": ""
+        "lastName": "",
+		"KYC": 
+	    {
+	        "identity": "5232210232",
+	        "iBANNumber": "8995422365998855663",
+	        "bICCode": "8888",
+	        "dateOfBirth": "2000-01-01T10:27:39.889Z",
+	        "kycCompleted": false
+	    }
     },
     "amount": 1000,
     "description": "Extenal Iphone mobile",
@@ -154,9 +164,23 @@ Milestones | list of objects (Milestone) | Seperate contract into multiple miles
 
 | Field Name | Type | Description | Required / Notes / Example |
 | --- | --- | --- | --- |
+| platformRefId | string | User identifier in wepay system | Optional |
 | phoneNumber | string | Party phone number (including country code) | **Required**<br/>Example: "966583944460" |
 | firstName | string | First name | **Required**<br/>Example: "Ahmad" |
 | lastName | string | Last name | **Required**<br/>Example: "Ali" |
+
+**Party (SellerParty)**
+| Field Name | Type | Description | Required / Notes / Example |
+| --- | --- | --- | --- |
+| kyc | object | kyc data for seller | Required |
+
+**Kyc object**
+| Field Name | Type | Description | Required / Notes / Example |
+| --- | --- | --- | --- |
+| identity | string | Seller national id | Required |
+| iBANNumber | string | Seller bank account IBAN | Required |
+| bICCode | string | Seller bank account BIC | Required |
+| dateOfBirth | datetime | Seller date of birth | Optional |
 
 **MetaData**
 
@@ -193,7 +217,7 @@ Milestones | list of objects (Milestone) | Seperate contract into multiple miles
 | contractId | string | Unique external contract identifier | **Required**<br><br>Example: "c8f1a3c2-9d12-4c8b-9f0a-123456789abc" |
 | status | string (ContractStatus) | Current contract status | **Required**<br><br>Example: "Pending" |
 | contractServiceType | string (ContractServiceType) | Type of contract service | **Required**<br><br>Example: "Product" |
-| checkoutUrl | string | Checkout URL for completing payment | **Required**<br><br>Example: "<https://checkout.example.com/contract/123>" |
+| checkoutUrl | string | Checkout URL for completing payment | **Required**<br><br>Example: "<https://integration.wepay-sa.com/checkout?token=encodedToken>" <br /> The **token** qurey parameter must be extracted and used in all subsequent requests related to the payment flow |
 | buyerParty | object (ExternalContractParty) | Buyer party details | **Required** |
 | sellerParty | object (ExternalContractParty) | Seller party details | **Required** |
 | reference | string | External reference identifier | Optional Nullable |
@@ -206,6 +230,7 @@ Milestones | list of objects (Milestone) | Seperate contract into multiple miles
 
 | Field Name | Type | Description | Required / Notes / Example |
 | --- | --- | --- | --- |
+| platformRefId | string | User identifier in wepay | **Required** |
 | firstName | string | First name | **Required**<br/>Example: "Ahmad" |
 | lastName | string | Last name | **Required**<br/>Example: "Ali" |
 | phoneNumber | string | Phone number including country code | **Required**<br/>Example: "966583944460" |
@@ -320,13 +345,15 @@ curl -X POST "https://api.wepay.com.sa/apps/api/contracts" \
 		"contractId": "CNT-2601-00100003",
 		"status": "pending",
 		"contractServiceType": "product",
-		"checkoutUrl": "<https://checkout.welink-sa.com?contractId=CNT-2601-00100003&token=RSGFF38PXVO>....",
+		"checkoutUrl": "<https://checkout.welink-sa.com?token=RSGFF38PXVO>....",
 		"buyerParty": {
+			"platformRefId": "USR_20260405152053_5487",
 			"firstName": "Buyer",
 			"lastName": "Name aa",
 			"phoneNumber": "966583944460"
 		},
 		"sellerParty": {
+			"platformRefId": "USR_20260405151029_7034",
 			"firstName": "Seller",
 			"lastName": "",
 			"phoneNumber": "966583944461"
