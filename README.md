@@ -217,7 +217,7 @@ Milestones | list of objects (Milestone) | Seperate contract into multiple miles
 | contractId | string | Unique external contract identifier | **Required**<br><br>Example: "c8f1a3c2-9d12-4c8b-9f0a-123456789abc" |
 | status | string (ContractStatus) | Current contract status | **Required**<br><br>Example: "Pending" |
 | contractServiceType | string (ContractServiceType) | Type of contract service | **Required**<br><br>Example: "Product" |
-| checkoutUrl | string | Checkout URL for completing payment | **Required**<br><br>Example: "<https://integration.wepay-sa.com/checkout?token=encodedToken>" <br /> The **token** qurey parameter must be extracted and used in all subsequent requests related to the payment flow |
+| checkoutUrl | string | Checkout URL for completing payment | **Required**<br><br>Example: "<https://integration.wepay-sa.com/checkout?token=encodedToken>" <br /> The **token** is valid for 10 minutes. If expired, you need to request a new one by calling `/apps/api/contracts/checkout` |
 | buyerParty | object (ExternalContractParty) | Buyer party details | **Required** |
 | sellerParty | object (ExternalContractParty) | Seller party details | **Required** |
 | reference | string | External reference identifier | Optional Nullable |
@@ -929,6 +929,52 @@ sequenceDiagram
 	]
 }
 ```
+
+## Step 4: Request a New Checkout Token (If Expired)
+If the original checkout token has expired, you must request a new checkout token before proceeding with the payment.
+
+`POST apps/api/contracts/checkout`
+**Headers**:
+- Authorization: Bearer {access_token}  Replace {access_token} with the token obtained from login (Step 1).
+- Content-Type: application/json
+
+```
+{
+    "buyerPhoneNumber": "966583944460",
+    "externalContractId": "CNT-2604-00100000"
+}
+```
+### Field Descriptions
+
+| Field Name | Type | Description | Required / Notes / Example |
+| --- | --- | --- | --- |
+| phoneNumber | string | User phone number | **Required** |
+| externalContractId | string | Contract id | **Required** |
+
+### Example Request (cURL)
+```
+curl --location 'https://api.wepay.com.sa/apps/api/contracts/checkout' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer YOUR_ACCESS_TOKEN' \
+--data '{
+    "buyerPhoneNumber": "966583944460",
+    "externalContractId": "CNT-2604-00100000"
+}'
+```
+
+### Example Response
+```
+{
+	"data":
+	{
+		"checkoutUrl": "https://integration.wepay-sa.com/checkout?token=encodedToken"
+	},
+	"message": "ContractCheckoutStartedSuccessfully",
+	"status": 200,
+	"validationErrors": []
+}
+```
+
 # Create User
 `POST apps/api/user`
 **Headers**:
