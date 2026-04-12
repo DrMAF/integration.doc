@@ -230,7 +230,7 @@ If you want to create a user in Wepay and get the platformRefId before creating 
 | contractId | string | Unique external contract identifier | **Required**<br><br>Example: "c8f1a3c2-9d12-4c8b-9f0a-123456789abc" |
 | status | string (ContractStatus) | Current contract status | **Required**<br><br>Example: "Pending" |
 | contractServiceType | string (ContractServiceType) | Type of contract service | **Required**<br><br>Example: "Product" |
-| checkoutUrl | string | Checkout URL for completing payment | **Required**<br><br>Example: "<https://integration.wepay-sa.com/checkout?token=encodedToken>" <br /> The **token** is valid for 10 minutes. If expired, you need to [request a new one](#Step-4-Request-a-New-Checkout-Token-If-Expired) by calling `/apps/api/contracts/checkout` |
+| checkout | object | Contains Checkout URL for completing payment | **Required**<br><br>Example: "<https://integration.wepay-sa.com/checkout?token=encodedToken>" <br /> The **token** is valid for 10 minutes. If expired, you need to [request a new one](#Step-4-Request-a-New-Checkout-Token-If-Expired) by calling `/apps/api/contracts/checkout` |
 | buyerParty | object (ExternalContractParty) | Buyer party details | **Required** |
 | sellerParty | object (ExternalContractParty) | Seller party details | **Required** |
 | reference | string | External reference identifier | Optional Nullable |
@@ -238,6 +238,14 @@ If you want to create a user in Wepay and get the platformRefId before creating 
 | milestones | array of Milestone | Contract milestones | **Required** |
 | pricingLineItems | array of ExternalPriceLineItem | Pricing breakdown items | **Required** |
 | createdDate | string (date-time) | Contract creation timestamp (UTC) | **Required**<br><br>Example: 2024-01-15T10:30:00Z |
+
+**Checkout**
+
+| Field Name | Type		| Description | Required / Notes / Example |
+| ---		 | ---		| ---	| --- |
+| Url		 | string	| Checkout URL for completing payment | Example: "<https://integration.wepay-sa.com/checkout?token=encodedToken>"  |
+| Token		 | string	| Encoded token |	 |
+| ExpiresAt  | string (date-time) | Token expiration timestamp (UTC) | Example: "2024-06-30T12:00:00Z" |
 
 **ExternalContractParty**
 
@@ -886,7 +894,12 @@ It also includes flags indicating whether onboarding is completed, where the use
 {
     "data": {
 		"platformRefId": "USR_123456"
-        "onboardingUrl": "https://integration.welink-sa.com/kyc?isVerified=False&isKycCompleted=False&token=encryptedToken",
+        "onboarding":
+		{
+			"token": "encryptedToken",
+			"url": "https://integration.welink-sa.com/kyc?isVerified=False&isKycCompleted=False&token=encryptedToken",
+			"expiresAt": "2024-06-30T12:00:00Z"
+		}
         "onboardingCompleted": false,
         "isVerified": false,
         "kycCompleted": false
@@ -900,13 +913,52 @@ It also includes flags indicating whether onboarding is completed, where the use
 **Note:** On [contract creation](#Step-2-Create-a-Contract), the seller receives an SMS with a KYC link to verify his identity.
 
 
+## Release Contract Funds
+
+Before releasing the funds, make sure that the contract status is `escrowed` and seller has successfully completed his KYC info and is verified user.
+
+If you are not sure of user's status, you can check it by calling the [Get User Onboarding Status API](#KYC-Flow) with the user's phone number to ensure that the seller is verified and has completed the KYC process.
+
+To release the funds for a specific contract/milestone, you can use the following API endpoint.
+
+`apps/api/contracts/release`
+
+| Field Name  | Type   | Description                    | Required / Notes / Example |
+| ----------- | ------ | ------------------------------ | -------------------------- |
+| contractId  | string | Contract id	 				| **Required** 				 |
+| milestoneId | string | Milestone id	 				| Optional 				     |
+| sellerIban* | string | Seller IBAN	 				| **Required**			     |
+
+**Note:** `sellerIban` is a mandatory field for release API, holding a valid IBAN value for successful release. 
+
+If the seller's IBAN is not provided or invalid, the release process will fail, and the funds will not be transferred to the seller. 
+
+Please, ensure that you have the correct IBAN information for the seller before initiating the release request.
+
+
+### Example Response
+The response will include the transactionId and the released amount.
+
+```
+{
+    "data": {
+		"transactionId": 123
+        "amount": 1000.00,
+        "contractId": "CNT-2604-00100002"
+    },
+    "message": "ExternalContractReleasedSuccessfully",
+    "status": 200,
+    "validationErrors": []
+}
+```
+
 ## Complete Integration Flow
 
 1. Your backend calls POST /connect/token.   Receive access_token.  
 1. Your backend calls POST /apps/api/contracts with access_token.  
 1. Receive checkoutUrl in response.   Redirect user to checkoutUrl.  
 1. User completes payment on WePay platform.   User is redirected to
-1. Your callbackurl.   Handle payment success/failure on your callback
+1. Your callbackurl. Handle payment success/failure on your callback
     page.
 
 ```mermaid
@@ -1015,7 +1067,12 @@ curl --location 'https://api.wepay.com.sa/apps/api/contracts/checkout' \
 {
 	"data":
 	{
-		"checkoutUrl": "https://integration.wepay-sa.com/checkout?token=encodedToken"
+		"checkout":
+		{
+			"token": "encodedToken",
+			"url": "https://integration.wepay-sa.com/checkout?token=encodedToken",
+			"expiresAt": "2024-06-30T12:00:00Z"
+		}
 	},
 	"message": "ContractCheckoutStartedSuccessfully",
 	"status": 200,
@@ -1077,7 +1134,12 @@ curl --location 'https://api.wepay.com.sa/apps/api/user' \
 	"data":
 	{
 		"platformRefId": "USR_123",
-		"kycUrl": "https://integration.wepay-sa.com/kyc?token=encodedToken"
+		"kyc":
+		{
+			"url": "https://integration.wepay-sa.com/kyc?token=encodedToken",
+			"token": "encodedToken",
+			"expiresAt": "2024-06-30T12:00:00Z"		
+		}
 	},
 	"message": "User created successfully.",
 	"status": 200,
@@ -1116,7 +1178,12 @@ curl --location 'https://api.wepay.com.sa/apps/api/user/onboarding?phoneNumber=9
 		"onboardingCompleted": false,
 		"isVerified": false,
 		"kycCompleted": false,
-		"onboardingUrl": "https://integration.wepay-sa.com/kyc?token=encodedToken"
+		"onboarding":
+		{		
+			"token": "encoded token",
+			"url": "https://integration.wepay-sa.com/kyc?token=encodedToken",
+			"expiresAt": "2024-06-30T12:00:00Z"
+		}
 	},
 	"message": "Success",
 	"status": 200,
