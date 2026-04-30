@@ -874,7 +874,9 @@ Seller receives an SMS with a KYC link to verify his identity on contract creati
 The response will include the `onboarding` object which has `url` where the user can complete their KYC if `externalHandleKyc` is set to false. 
 And `isVerified` indicates whether the user is absher verified, and `kycCompleted` indicates whether the KYC process is completed for the user.
 `isBankAccountReady` indicates whether the user needs to add bank account details or not.
+And query parameters `callbackUrl` indicates the URL to which the user will be redirected after completing the KYC process, and `isWelcome` indicates whether welcome page should be shown.
 It also includes flags indicating whether onboarding is completed, where the user is absherVerified and KYC is completed.
+
 ```
 {
     "data": {
@@ -882,7 +884,7 @@ It also includes flags indicating whether onboarding is completed, where the use
         "onboarding":
 		{
 			"token": "encryptedToken",
-			"url": "https://integration.welink-sa.com/kyc?isVerified=False&isKycCompleted=False&token=encryptedToken",
+			"url": "https://integration.welink-sa.com/kyc?isVerified=False&isKycCompleted=False&isBankAccountReady&callbackUrl&token=encryptedToken",
 			"expiresAt": "2024-06-30T12:00:00Z"
 		}
         "onboardingCompleted": false,
@@ -1070,7 +1072,8 @@ curl --location 'https://api.wepay.com.sa/apps/api/contracts/checkout' \
 {
     "phoneNumber" : "966583944460",
     "firstName" : "Name",
-    "lastName" : "Family"
+    "lastName" : "Family",
+	"callbackUrl": "https://yourapp.com/callback"
 }
 ```
 
@@ -1081,6 +1084,7 @@ curl --location 'https://api.wepay.com.sa/apps/api/contracts/checkout' \
 | phoneNumber | string | User phone number | **Required** |
 | firstName | string | User first name | **Required** |
 | lastName | string | User last name | **Required** |
+| callbackUrl | string | URL to redirect after KYC completion | Optional |
 
 ### Example Request (cURL)
 
@@ -1091,7 +1095,8 @@ curl --location 'https://api.wepay.com.sa/apps/api/user' \
 --data '{
     "phoneNumber" : "966583944460",
     "firstName" : "Name",
-    "lastName" : "Family"
+    "lastName" : "Family",
+	"callbackUrl": "https://yourapp.com/callback"
 }'
 ```
 
@@ -1103,7 +1108,7 @@ curl --location 'https://api.wepay.com.sa/apps/api/user' \
 		"platformRefId": "USR_123",
 		"kyc":
 		{
-			"url": "https://integration.wepay-sa.com/kyc?token=encodedToken",
+			"url": "https://integration.wepay-sa.com/kyc?isVerified=False&isKycCompleted=False&isBankAccountReady&callbackUrl&token=encryptedToken",
 			"token": "encodedToken",
 			"expiresAt": "2024-06-30T12:00:00Z"		
 		}
@@ -1137,27 +1142,32 @@ curl --location 'https://api.wepay.com.sa/apps/api/user/onboarding?phoneNumber=9
 --data ''
 ```
 
+The response will include the `onboarding` object which has `url` where the user can complete their KYC if `externalHandleKyc` is set to false. 
+And `isVerified` indicates whether the user is absher verified, and `kycCompleted` indicates whether the KYC process is completed for the user.
+`isBankAccountReady` indicates whether the user needs to add bank account details or not.
+And query parameters `callbackUrl` indicates the URL to which the user will be redirected after completing the KYC process, and `isWelcome` indicates whether welcome page should be shown.
+It also includes flags indicating whether onboarding is completed, where the user is absherVerified and KYC is completed.
+
 ### Example Response
 
 ```
 {
-	"data":
-	{
+    "data": {
 		"platformRefId": "USR_123",
-		"onboardingCompleted": false,
-		"isVerified": false,
-		"kycCompleted": false,
+         "onboardingCompleted": false,
+        "isVerified": false,
+        "kycCompleted": false,
 		"isBankAccountReady": true,
 		"onboarding":
-		{		
+		{
 			"token": "encoded token",
-			"url": "https://integration.wepay-sa.com/kyc?token=encodedToken",
+			"url": "https://integration.welink-sa.com/kyc?isVerified=False&isKycCompleted=False&isBankAccountReady&callbackUrl&token=encodedToken",
 			"expiresAt": "2024-06-30T12:00:00Z"
-		}
-	},
-	"message": "Success",
-	"status": 200,
-	"validationErrors": []
+		}       
+    },
+    "message": "OnboardingRetrievedSuccessfully",
+    "status": 200,
+    "validationErrors": []
 }
 ```
 
@@ -1715,7 +1725,8 @@ If you encounter issues not covered here:
 
 ### Q: What happens if I close the browser during payment?
 
-**A:** If you've completed KYC, you can return to the link and proceed directly to payment. If payment was in progress, check with your bank or payment gateway.
+**A:** If you've completed KYC, you can return to the link and proceed directly to payment.
+If payment was in progress, check with your bank or payment gateway.
 
 ### Q: Is my payment information stored?
 
